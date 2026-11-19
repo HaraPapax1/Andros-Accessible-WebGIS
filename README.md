@@ -1,4 +1,4 @@
-# Andros Accessible WebGIS
+# Andros Accessible WebMap
 
 **Design of a web map with digital accessibility for visually impaired users**
 
