@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Accessible Web Map of Andros Island</title>
+    <meta
+      name="description"
+      content="Accessible interactive web map of Andros Island, built with GeoServer and Leaflet."
+    />
+
+    <!-- WCAG 1.4.4: zoom is allowed on mobile (removed user-scalable=no / maximum-scale) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- Leaflet 1.9.4 (upgraded from 1.0.3). If a plugin misbehaves, revert both lines to leaflet@1.0.3 -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- jQuery 3.7.1 + jQuery UI 1.13.3 over HTTPS (upgraded from 1.10.2 / 1.11.4 over HTTP) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.13.3/themes/smoothness/jquery-ui.css"
+    />
+
+    <link rel="stylesheet" href="mystyle.css" type="text/css" />
+
+    <script src="leaflet.singletilewmslayer.js"></script>
+    <script src="js/leaflet.wms.js"></script>
+    <script src="L.TileLayer.BetterWMS.js"></script>
+
+    <script src="leaflet-ajax/dist/leaflet.ajax.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="Leaflet.Coordinates-master/dist/Leaflet.Coordinates-0.1.5.css"
+    />
+    <script
+      type="text/javascript"
+      src="Leaflet.Coordinates-master/dist/Leaflet.Coordinates-0.1.5.min.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="leaflet.ScaleFactor-master/leaflet.scalefactor.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="leaflet.ScaleFactor-master/leaflet.scalefactor.min.js"
+    ></script>
+
+    <script src="Proj4Leaflet-master/lib/proj4.js"></script>
+    <script src="Proj4Leaflet-master/src/proj4leaflet.js"></script>
+    <link
+      rel="stylesheet"
+      href="leaflet-graphicscale-master/dist/Leaflet.GraphicScale.min.css"
+    />
+    <script src="leaflet-graphicscale-master/dist/Leaflet.GraphicScale.min.js"></script>
+    <script type="text/javascript" src="geo.js"></script>
+
+    
+    <!-- MiniMap Plugin -->
+    <link rel="stylesheet" href="Control.MiniMap.css" />
+    <script src="Control.MiniMap.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body onload="init()">
+    <!-- Accessibility: skip links (WCAG 2.4.1) -->
+    <a href="#xartis" class="skip-link">Skip to the map</a>
+    <a href="#menu" class="skip-link skip-link-second"
+      >Skip to the information sidebar</a
+    >
+
+    <!-- Accessibility: single page title for screen readers (WCAG 1.3.1 / 2.4.6) -->
+    <header aria-label="Page heading">
+      <h1 class="visually-hidden">Accessible Web Map of Andros Island</h1>
+    </header>
+
+    <!-- Live region: announces layer add/remove for screen readers (WCAG 4.1.3) -->
+    <div
+      id="layer-announcer"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="visually-hidden"
+    ></div>
+
+    <div id="preloader" role="status" aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Loading map application&hellip;</p>
+    </div>
+
+    <div id="main" name="main">
+      <!-- Accessibility: sidebar as a labelled landmark (WCAG 1.3.1) -->
+      <div
+        id="menu"
+        name="menu"
+        role="complementary"
+        aria-label="Map information, legends and controls"
+        tabindex="-1"
+      >
+        <h2 class="visually-hidden">Map information and legends</h2>
+<button
+  id="read-map-description"
+  type="button"
+  hidden
+>
+  Read map description
+</button>
+        <div id="accordion">
+          <!-- ==================================================================== -->
+          <h3>
+            <i class="fas fa-map-marked-alt" aria-hidden="true"></i>Andros
+            Island Web Map
+          </h3>
+          <div tabindex="0" class="keyboard-scroll-panel">
+            <h4 class="sidebar-subheading">About</h4>
+            <p>
+              This interactive web map presents geographic, environmental and
+              thematic information for Andros Island, Greece. It includes
+              accessibility features to support different ways of accessing and
+              interacting with the map, including keyboard navigation, screen-
+              reader information, and text-based alternatives.
+            </p>
+
+            <p>
+              The graphical user interface uses cream and beige panels, dark
+              green headings, and simple boxed controls. It follows a two-column
+              layout:
+            </p>
+            <ul>
+              <li>
+                <strong>Left sidebar:</strong> A scrollable information panel
+                with a beige title bar and the following sections: Andros
+            Island Web Map, Andros Map 1 to 150K scale: Legend & Text Alternative, 3.	Chora Map 1 to 5K: Legend & Text Alternative, Land-use Map: Legend & Text Alternative, Information about Andros Island and	Data Sources.
+              </li>
+              <li>
+                <strong>Map area:</strong> It covers most of the screen and
+                includes several elements for <b> map controls</b> and
+                <b>supporting information</b>.
+              </li>
+            </ul>
+
+            <p>This web map application provides the following:</p>
+            <ul>
+              <li>
+                <strong>Andros Map - 1 to 150K scale:</strong> an island-wide
+                representation depicting settlements, coastline, road network
+                and the neighboring island of Tinos.
+              </li>
+              <li>
+                <strong>Chora Map 1 to 5K scale:</strong> a large-scale
+                representation of Chora including roads, waterways and points of
+                interest.
+              </li>
+              <li>
+                <strong>Land use layer:</strong> portrays the main land uses on
+                the island.
+              </li>
+            </ul>
+
+            <hr class="sidebar-divider" />
+
+            <h4 class="sidebar-subheading">Explore the map</h4>
+            <p>
+              The map can be navigated with a mouse using the zoom buttons that
+              appear at the upper left. </p>
+              <p>
+              Alternatively, with the keyboard, use
+              the arrow keys to pan and the + and - keys to zoom. </p> <p>A Layers
+              button sits at the upper right for choosing basemaps and thematic
+              overlays. The Basemap list include OpenStreetMap, Light OpenStreetMap, Esri World Gray Canvas and Esri World Imagery. </p> <p> The layers list include
+              Andros Map 1:150,000, Chora Map 1:5,000, Land Uses and Annotations. </p><p>Use the Layers control to switch between basemaps and thematic
+              layers and explore the available information at different scales.
+              An index map appears at the lower right. </p> <p>The geographical
+              coordinates of the cursor appear above the index map on a white
+              background. A scale bar appears at the lower left on a white
+              background.</p>
+            </p>
+          </div>
+
+          <!-- ==================================================================== -->
+          <!-- ESRI FUNDAMENTAL REQUIREMENT: text alternative to the map (WCAG 1.1.1) -->
+
+
+          <!-- ==================================================================== -->
+          <h3>
+            <i class="fas fa-layer-group" aria-hidden="true"></i>Andros Map 1 to 150K scale:
+            Legend & Text Alternative
+          </h3>
+          <div id="info_150000" class="layer-info" style="display: none" tabindex="0">
+            <div style="width: 100%; height: auto">
+              <table class="legend" role="presentation">
+                <tbody>
+                  <tr>
+                    <td class="legend_img">
+                      <img src="./img/legend_small/chora.png" alt="" />
+                    </td>
+                    <td class="legend_title">Chora</td>
+                    <td class="legend_img">
+                      <img src="./img/legend_small/settlement.PNG" alt="" />
+                    </td>
+                    <td class="legend_title">Settlement</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_small/district_road.PNG"
+                        width="30"
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">District road</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_small/village_road.png"
+                        width="30"
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Village road</td>
+                  </tr>
+
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_small/agricultural_road.png"
+                        width="30"
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Agricultural road</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_small/coastline.png"
+                        width="30"
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Coastline</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_small/Forest.PNG"
+                        width="23"
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Forest</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_small/tinos.png"
+                        width="23"
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Tinos island</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Accessible text alternative for Map 1 -->
+            <section aria-labelledby="map-description-150000">
+              <h4 id="map-description-150000" class="sidebar-subheading">
+                Description
+              </h4>
+
+              <p>
+                This map provides an overview of Andros Island and its main
+                geographical features. It displays the coastline, selected
+                settlements and the Chora, the island's main town, the road network, distinguishing between
+                district, village and agricultural. Forest areas and
+                the neighbouring island of Tinos are also portrayed. The map helps
+                users understand the general geographical structure of Andros
+                and the distribution of its main settlements and transport
+                connections.
+              </p>
+              <p>The following symbols appear on the map and the legend.</p>
+<p>Black-filled circle with a white ring and dark outer outline for the Chora, the island’s main
+town.</p>
+<p>Hollow circle with a dark outline for a <b>Settlement</b>.</p>
+
+<p>Thick red line with a dark outline the <b>District road</b>.</p>
+<p>Thin orange line for the <b>Village road</b>.</p>
+<p>Dashed gray line for <b>Agricultural road</b>.</p>
+<p>Thin blue line for the <b>Coastline</b>.</p>
+<p>Light-green for the <b>Forest</b>.</p>
+<p>The road network and villages are unevenly distributed across Andros. <b> The main district
+roads are concentrated in the central and southern parts,</b> forming a connected route
+system between the western side, Chora on the eastern coast, and the southeastern
+interior. The north is served mainly by village and agricultural roads.</p>
+<p>
+<b>Village roads branch from the main routes,</b> connecting inland areas and smaller
+settlements. They form a more extensive network in the north, where district roads are
+largely absent. Dashed agricultural roads extend farther into the countryside, particularly
+across the northern interior and toward the island’s edges.</p>
+<p>The depicted villages are scattered along the road network, with several on the western side
+and across the central belt toward Chora. Fewer settlement symbols appear in the far north
+and at the southern tip. <b>Chora stands out on the eastern coast,</b> where several road
+connections converge.</p> 
+<p>The settlements shown on the map can be described geographically, starting from the northern part of the island, continuing eastwards, then southwards and finally westwards:</p>
+ <ul>
+       <li> 
+<strong>Northern Andros:</strong> Kalamos, Kalyvari, Ano Vitalio.
+              </li> 
+              <li> 
+<strong>Eastern and north-eastern Andros: </strong> Ateni Arnas, Vourkoti, Chora, Vrachnos.
+              </li>
+              <li> 
+<strong>Southern Andros: </strong>Pitrofos, Kolympos, Kochylos, Zagariani, Piso Meria.
+              </li>
+      <li> 
+<strong>Western Andros: </strong>Gavrio, Batsi, Stivari, Kalamaki.</p>
+      </li></ul>
+            </section>
+          </div>
+
+          <!-- ==================================================================== -->
+          <h3>
+            <i class="fas fa-layer-group" aria-hidden="true"></i>Chora Map 1 to 5K Scale:
+            Legend & Text Alternative
+          </h3>
+          <div id="info_5000" class="layer-info" style="display: none" tabindex="0">
+            <div style="width: 100%; height: auto">
+              <!-- Legend table -->
+              <table class="legend" role="presentation">
+                <tbody>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/accomodation.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Accommodation</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/bar.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Bar</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/cinema.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Cinema</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/pharmacy.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Pharmacy</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/cafe.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Cafe</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/drinking_water.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Drinking water</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/restaurant.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Restaurant</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/castle.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Castle</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/information.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Information</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/museum.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Museum</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/viewpoint.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Viewpoint</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/watermill.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Watermill</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/fuel_station.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Fuel station</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/post_office.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Post office</td>
+                  </tr>
+                  <tr>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/recycling.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Recycling</td>
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/ferry_terminal.png"
+                        style="
+                          width: 27px !important;
+                          height: 27px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: contain;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Ferry terminal</td>
+                  </tr>
+                  <!-- Road symbols -->
+                  <tr>
+                    <td class="legend_img">
+                      <svg
+                        width="34"
+                        height="25"
+                        viewBox="0 0 34 25"
+                        aria-hidden="true"
+                      >
+                        <line
+                          x1="2"
+                          y1="12"
+                          x2="32"
+                          y2="12"
+                          stroke="#B91C1C"
+                          stroke-width="4"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </td>
+                    <td class="legend_title">Major road</td>
+
+                    <td class="legend_img">
+                      <svg
+                        width="34"
+                        height="25"
+                        viewBox="0 0 34 25"
+                        aria-hidden="true"
+                      >
+                        <line
+                          x1="2"
+                          y1="12"
+                          x2="32"
+                          y2="12"
+                          stroke="#C2410C"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </td>
+                    <td class="legend_title">Minor road</td>
+                  </tr>
+
+                  <tr>
+                    <td class="legend_img">
+                      <svg
+                        width="34"
+                        height="25"
+                        viewBox="0 0 34 25"
+                        aria-hidden="true"
+                      >
+                        <line
+                          x1="2"
+                          y1="12"
+                          x2="32"
+                          y2="12"
+                          stroke="#92400E"
+                          stroke-width="2"
+                          stroke-dasharray="6 4"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </td>
+                    <td class="legend_title">Path</td>
+
+                    <td class="legend_img">
+                      <img
+                        src="./img/legend_large/stream.png"
+                        style="
+                          width: 45px !important;
+                          height: 35px !important;
+                          max-width: none;
+                          max-height: none;
+                          object-fit: fill;
+                        "
+                        alt=""
+                      />
+                    </td>
+                    <td class="legend_title">Stream</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Accessible text alternative for Map 2 -->
+            <section aria-labelledby="map-description-5000">
+              <h4 id="map-description-5000" class="sidebar-subheading">
+               Description
+              </h4>
+
+              <p>
+                This large-scale map presents the area of Chora, the island's capital. It shows major and minor
+roads, pedestrian paths, streams and Points of Interest such as
+accommodation, restaurants, cafes, cultural attractions, public services, transport facilities
+and other amenities. The map provides an exploration of Chora's built
+environment and information about the location and types of services and facilities
+available in the area.</p>
+<P>Colored square symbols with white pictograms for the Points of Interest and line styles for
+roads and waterways are used for symbolization. The following symbols appear on the map
+and the legend:</P>
+<p>White bed on an orange square <b>Accommodation</b>.</p>
+<p>White cocktail glass on a pink square <b>Bar</b>.</p>
+<p>White cinema symbol on a pink square <b>Cinema</b>.</p>
+<p>White cross on a green square <b>Pharmacy</b>.</p>
+<p>White cup and saucer on a dark-green square <b>Café</b>.</p>
+<p>White tap and water drop on a dark-green square <b>Drinking water</b>.</p>
+<p>White fork and knife on a dark-green square <b>Restaurant</b>.</p>
+<p>White castle on a bright-purple square <b>Castle</b>.</p>
+<p>White lowercase “i” on a dark-purple square <b>Information</b>.</p>
+<p>White classical building on a bright-purple square <b>Museum</b>.</p>
+<p>White binoculars on a dark-purple square <b>Viewpoint</b>.</p>
+<p>White mill with four sails on a bright-purple square <b>Watermill</b>.</p>
+<p>White fuel pump on a blue square <b>Fuel station</b>.</p>
+<p>White envelope on a blue square <b>Post office</b>.</p>
+<p>White recycling arrows on a blue square <b>Recycling</b>.</p>
+<p>White ferry above waves on a black square <b>Ferry terminal</b>.</p>
+<p>Thick, solid red line <b>Major road</b>.</p>
+<p>Thin, solid red line <b>Minor road</b>.</p>
+<p>Dashed brown line <b>Path</b>.</p>
+<p>Dashed blue line <b>Stream</b>.</p>
+              </p>
+            </section>
+          </div>
+
+          <!-- ==================================================================== -->
+          <h3>
+            <i class="fas fa-layer-group" aria-hidden="true"></i>
+            Land-use Map: Legend & Text Alternative
+          </h3>
+
+          <div id="info_other" class="layer-info" style="display: none" tabindex="0">
+            <div style="width: 100%; height: auto">
+              <!-- Colour swatches match the ColorBrewer Paired land-use SLD -->
+              <table class="legend" role="presentation">
+                <tbody>
+                  <tr>
+                    <td class="legend_img">
+                      <span
+                        class="lu-swatch"
+                        style="background: #33a02c"
+                        aria-hidden="true"
+                      ></span>
+                    </td>
+                    <td class="legend_title">Mixed Forest</td>
+
+                    <td class="legend_img">
+                      <span
+                        class="lu-swatch"
+                        style="background: #fdbf6f"
+                        aria-hidden="true"
+                      ></span>
+                    </td>
+                    <td class="legend_title">Arable Land</td>
+                  </tr>
+
+                  <tr>
+                    <td class="legend_img">
+                      <span
+                        class="lu-swatch"
+                        style="background: #b2df8a"
+                        aria-hidden="true"
+                      ></span>
+                    </td>
+                    <td class="legend_title">Sclerophyllous Vegetation</td>
+
+                    <td class="legend_img">
+                      <span
+                        class="lu-swatch"
+                        style="background: #b15928"
+                        aria-hidden="true"
+                      ></span>
+                    </td>
+                    <td class="legend_title">Olive Groves</td>
+                  </tr>
+
+                  <tr>
+                    <td class="legend_img">
+                      <span
+                        class="lu-swatch"
+                        style="background: #a6cee3"
+                        aria-hidden="true"
+                      ></span>
+                    </td>
+                    <td class="legend_title">Sparsely vegetated areas</td>
+
+                    <td class="legend_img">
+                      <span
+                        class="lu-swatch"
+                        style="background: #ffff99"
+                        aria-hidden="true"
+                      ></span>
+                    </td>
+                    <td class="legend_title">Natural Grassland</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Accessible text alternative for Land-use Map -->
+            <section aria-labelledby="map-description-landuse">
+              <h4 id="map-description-landuse" class="sidebar-subheading">
+              Description
+              </h4>
+
+              <p>
+                This thematic map illustrates the distribution of land-use and
+                vegetation categories across Andros Island. It distinguishes six
+                categories: mixed forest, arable land, sclerophyllous
+                vegetation, olive groves, sparsely vegetated areas and natural
+                grassland. Each category is represented by a different color,
+                while the shaded terrain background provides additional information
+                about the island's relief. The map helps users identify the main
+                types of land cover and understand their geographical
+                distribution. </p>
+                <p>Dark green: Mixed forest - woodland containing different types of trees.</p>
+<p>Light green: <b>Sclerophyllous vegetation</b> - hardy shrubs and small trees with tough leaves,
+typical of Mediterranean landscapes.</p>
+<p>Light Blue: <b>Sparsely vegetated areas</b> - land with little plant cover, often exposed soil or rock.</p>
+<p>Orange: <b>Arable land</b> - farmland used to grow crops.</p>
+<p>Brown: <b>Olive groves</b> - areas planted with olive trees.</p>
+<p>Pale yellow: <b>Natural grassland</b> - land dominated by naturally occurring grasses and other
+low-growing plants.</p>
+<p>Land uses across Andros differ clearly between the northern, central and southern parts of
+the island.</p>
+<ul>
+              <li>
+                <strong>
+  Natural grassland (pale yellow) </strong> is widespread, especially in the north and along
+parts of the western coast and southern margins.</li></ul>
+<ul>
+              <li>
+                <strong>Olive groves (brown)</strong> form extensive, elongated patches across the interior,
+particularly in the central and north-central areas.</li></ul>
+<ul>
+              <li>
+                <strong>Arable land (orange) </strong>is concentrated mainly in the central and southern parts, with
+smaller scattered patches farther north.</li></ul>
+<ul>
+              <li>
+                <strong>Sclerophyllous vegetation (light green)</strong> occurs mainly in the northern and central-
+eastern interior, forming several sizeable patches.</li></ul>
+<ul>
+              <li>
+                <strong>Sparsely vegetated areas (light blue)</strong> are particularly prominent in the south and
+southeast, with smaller bands in the northern interior and near the eastern coast.</li></ul>
+<ul>
+              <li>
+                <strong>Mixed forest (dark green)</strong> has a limited distribution, appearing in small, isolated
+patches mainly around the central interior.</li></ul>
+<p>Overall, grassland and agricultural land occupy much of the island, while shrub vegetation is
+more concentrated in the north and centre, and sparsely vegetated terrain is most
+noticeable in the south.
+     </p>
+            </section>
+          </div>
+          <!-- ==================================================================== -->
+          <h3>
+            <i class="fas fa-info-circle" aria-hidden="true"></i>Information
+            about Andros Island
+          </h3>
+          <div tabindex="0" class="keyboard-scroll-panel">
+            <h4 class="sidebar-subheading">About Andros</h4>
+
+            <p>
+              Andros is the northernmost island of the Cyclades and the second
+              largest in the island group after Naxos. Its landscape combines
+              mountainous areas, valleys, coastal zones and numerous water
+              sources, creating a diverse natural environment.
+            </p>
+
+            <p>
+              The island is characterized by traditional settlements, extensive
+              road and path networks, areas of natural vegetation and a long
+              maritime tradition. Chora, the island's main town, includes
+              residential areas, public services, cultural sites and other
+              points of interest.
+            </p>
+
+            <img
+              src="./img/andros.jpg"
+              class="sidebar-image"
+              alt="The Tourlitis Lighthouse standing on a rock in the sea near Chora, Andros."
+            />
+
+            <hr class="sidebar-divider" />
+
+            <h4 class="sidebar-subheading">Further information</h4>
+
+            <p>
+              Additional information about Andros, including its settlements,
+              culture, natural environment and visitor information, is available
+              on the official website of the Municipality of Andros.
+            </p>
+
+            <p class="external-link">
+              <a
+                href="https://www.andros.gr/en/"
+                target="_blank"
+                rel="noopener"
+              >
+                <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                Visit the official Andros website
+              </a>
+            </p>
+          </div>
+          <h3>
+            <i class="fas fa-info-circle" aria-hidden="true"></i>Data Sources
+          </h3>
+           <div> 
+           <p>
+  <strong>OpenStreetMap contributors:</strong>
+  Source of the points of interest, road network and hydrographic
+  network used in the Chora map at 1:5,000 scale.
+</p>
+
+<p>
+  <strong>USGS EarthExplorer:</strong>
+  Source of the Landsat 9 imagery used to produce the land-cover
+  classification of Andros. The classified raster was subsequently
+  generalized and converted into polygon vector data.
+</p>
+
+<p>
+  <strong>Copernicus Land Monitoring Service:</strong>
+  CORINE Land Cover 2018 (CLC2018) was used as reference data
+  for land-cover interpretation.
+</p>
+
+<p>
+  <strong>Original cartographic project:</strong>
+  Source of the road network, settlements, coastline and Tinos Island
+  polygon used in the Andros map at 1:150,000 scale, together with
+  the DEM used to generate the hillshade. Cartographic annotations
+  were derived during cartographic processing.
+</p>
+
+<p>
+  <strong>Basemap providers:</strong>
+  OpenStreetMap (OpenStreetMap and Light OpenStreetMap)
+  and Esri (World Gray Canvas and World Imagery).
+</p></div>
+        </div>
+ <!-- ==================================================================== -->
+          
+        <div id="footer-label">
+          <img
+            src="img/ntua.png"
+            alt="National Technical University of Athens logo"
+          />
+          <p>
+            <strong>NATIONAL TECHNICAL UNIVERSITY OF ATHENS</strong><br />
+            MSc GEOINFORMATICS<br />
+            ACADEMIC YEAR: 2025–2026<br />
+            STUDENT: CHARIKLEIA PAPACHRISTOU
+          </p>
+        </div>
+      </div>
+
+      <main aria-label="Map area">
+        <div
+          id="xartis"
+          name="xartis"
+          role="application"
+          tabindex="0"
+          aria-label="Interactive map of Andros Island"
+        ></div>
+      </main>
+    </div>
+
+    <script>
+      // Keyboard scrolling for focusable accordion panels.
+      // The scrollable container is #menu, not the individual panels.
+      document.addEventListener("DOMContentLoaded", function () {
+        const menu = document.getElementById("menu");
+        if (!menu) return;
+
+        menu.addEventListener("keydown", function (event) {
+          const panel = event.target;
+          if (!panel.matches("#accordion > div[tabindex='0']")) return;
+          if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+          const page = Math.max(100, Math.round(menu.clientHeight * 0.8));
+          const amounts = {
+            ArrowDown: 60,
+            ArrowUp: -60,
+            PageDown: page,
+            PageUp: -page
+          };
+
+          if (Object.prototype.hasOwnProperty.call(amounts, event.key)) {
+            event.preventDefault();
+            menu.scrollBy({ top: amounts[event.key], behavior: "instant" });
+          } else if (event.key === "Home") {
+            event.preventDefault();
+            menu.scrollTop = 0;
+          } else if (event.key === "End") {
+            event.preventDefault();
+            menu.scrollTop = menu.scrollHeight;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

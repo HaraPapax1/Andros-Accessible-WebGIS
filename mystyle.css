@@ -1,0 +1,686 @@
+/* === BEIGE THEME MENU CSS (accessibility-improved) === */
+
+/* ---------- Accessibility helpers ---------- */
+
+/* Screen-reader-only content (visible to assistive tech, hidden visually) */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link (WCAG 2.4.1) - appears when focused with the keyboard */
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  z-index: 10000;
+  background: #4b3e2a;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 0 0 6px 6px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 15px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+.skip-link-second {
+  left: auto;
+  right: 8px;
+}
+.skip-link-second:focus {
+  top: 0;
+}
+
+/* Visible keyboard focus indicators (WCAG 2.4.7) */
+a:focus-visible,
+button:focus-visible,
+.ui-accordion-header:focus-visible,
+#xartis:focus-visible,
+.leaflet-control a:focus-visible,
+.leaflet-control-layers-toggle:focus-visible,
+input:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
+/* Respect users who ask for reduced motion (WCAG 2.3.3 / vestibular safety) */
+@media (prefers-reduced-motion: reduce) {
+  #preloader .spinner {
+    animation: none !important;
+  }
+  * {
+    transition: none !important;
+  }
+}
+
+/* ---------- Preloader ---------- */
+
+#preloader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url("img/andros.jpg") no-repeat center center;
+  background-size: cover;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  opacity: 1;
+  visibility: visible;
+}
+
+#preloader::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.4);
+    z-index: -1;
+}
+
+#preloader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+#preloader .spinner {
+  border: 5px solid #ccc;
+  border-top: 5px solid #a67c00;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Higher-contrast loader text on a solid chip (was #ccc, nearly invisible) */
+#preloader p {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222222;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ---------- Layout ---------- */
+
+body, #menu {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background-color: #fefaf3;
+  color: #333;
+}
+
+#main {
+  height: 100%;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  overflow-y: hidden;
+  overflow-x: auto;
+  min-height: 530px;
+}
+
+#menu {
+  position: relative;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  margin-left: 0px;
+  margin-top: 0px;
+  background-color: #fcf5e8;
+  width: 450px;
+  float: left;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100%;
+  border-right: 1px solid #ddd5c3;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.05);
+  border-radius: 0 10px 10px 0;
+}
+
+#xartis {
+  width: calc(100% - 466px) !important;
+  min-width: 0;
+  min-height: 20%;
+  height: auto;
+  position: absolute;
+  top: 0px;
+  float: left;
+  left: 460px;
+  bottom: 0px;
+  margin-left: 0px;
+  margin-top: 0px;
+  background-color: #e6e0d3;
+  border: 2px solid #d8cab3;
+  z-index: 100;
+}
+
+/* Accordion styling */
+.ui-accordion-header, h3 {
+  background: linear-gradient(to right, #fdf5e6, #f0e0c5);
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  font-weight: 500;
+  padding: 10px;
+  font-size: 18px;
+  color: #4b3e2a;
+  border: none;
+  border-bottom: 1px solid #d6c5aa;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.ui-accordion-header:hover {
+  background: #ebdcc5;
+}
+
+.ui-accordion-header-active {
+  background: #e0cda4 !important;
+  color: #2f2f2f !important;
+}
+
+.ui-accordion-content {
+  padding: 6px 10px !important;
+  background-color: #fffdf7;
+  border-left: 3px solid #e0cda4;
+  border-radius: 0 0 6px 6px;
+  margin-bottom: 60px;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Legend Tables (font size raised from 10px to 14px for readability, WCAG 1.4.4) */
+.legend, .legend1 {
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 0 10px;
+  border-collapse: separate;
+  font-size: 16px;
+}
+
+.legend td, .legend1 td {
+  color: #333;
+  font-size: 16px;
+  text-align: left;
+  vertical-align: middle;
+  padding-bottom: 6px;
+}
+
+.legend_cb, .legend1_cb {
+  width: 20px;
+  font-size: 16px;
+}
+
+.legend_img, .legend1_img {
+  width: 25px;
+  padding-right: 12px;
+}
+
+.legend_img img, .legend1_img img {
+  vertical-align: middle;
+  max-height: 20px;
+}
+
+/* Land-use colour swatches — replace the old fixed-colour PNGs so the
+   legend always matches the palette used by the land_uses.sld style. */
+.lu-swatch {
+  display: inline-block;
+  width: 22px;
+  height: 14px;
+  border: 1px solid rgba(80, 80, 80, 0.45);
+  box-sizing: border-box;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+
+.legend_title, .legend1_title {
+  width: 90px;
+  text-align: left;
+  font-size: 16px;
+}
+
+/* Text-alternative data table */
+.data-table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.data-table th,
+.data-table td {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.data-table th, .data-table td {
+  border: 1px solid #d6c5aa;
+  padding: 6px 5px;
+  text-align: left;
+  vertical-align: top;
+}
+.data-table th {
+  background: #f0e0c5;
+  color: #3a2f1c;
+}
+
+#menu p {
+  margin: 0;
+  padding: 0;
+  font-size: 17px;
+  text-align: justify;
+  line-height: 1.5;
+  max-width: 100%;
+  word-break: normal;
+}
+
+#menu ul {
+  font-size: 17px;
+  line-height: 1.5;
+  padding-left: 18px;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Footer Label with NTUA Logo on Top */
+#footer-label {
+  align-self: center;
+  margin-top: auto;
+  font-size: 15px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #3a3a3a;
+  background-color: #fcf5e8;
+  padding: 8px 10px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  max-width: 280px;
+  text-align: center;
+  margin: 20px auto 10px auto;
+  border-top: 1px solid #ddd5c3;
+}
+
+#footer-label img {
+  height: 48px;
+  width: auto;
+  margin-bottom: 6px;
+}
+
+#footer-label p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: center;
+  white-space: normal;
+}
+
+h3 i {
+  margin-right: 8px;
+}
+/* Responsive reflow for zoomed/narrow viewports */
+@media (max-width: 800px) {
+  #main {
+    position: relative;
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+  }
+
+  #menu {
+    float: none;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    border-radius: 0;
+  }
+
+  #xartis {
+    position: relative;
+    left: 0;
+    width: 100% !important;
+    min-width: 0;
+    height: 600px;
+    min-height: 600px;
+    float: none;
+  }
+}
+.sidebar-subheading {
+    font-size: 19px;
+    font-weight: 700;
+    color: #3f4f3f;
+    line-height: 1.4;
+    margin: 16px 0 10px 0;
+    padding: 7px 10px;
+    background-color: #f4f1e8;
+    border-left: 4px solid #8fa77b;
+    border-radius: 0 5px 5px 0;
+}
+
+#menu p {
+    text-align: left;
+    line-height: 1.55;
+    margin: 0 0 14px 0;
+}
+
+.sidebar-divider {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid #d6c5aa;
+    margin: 16px 0;
+}
+.sidebar-image {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin: 14px auto 18px auto;
+    border-radius: 7px;
+    box-sizing: border-box;
+}
+.external-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.external-link a:hover {
+    text-decoration: underline;
+}
+/* MiniMap show/hide button */
+.leaflet-control-minimap-toggle-display {
+    background-color: #e7d3a5 !important;
+    border: 1px solid #8b7650 !important;
+    border-radius: 4px 0 0 0 !important;
+}
+.leaflet-control-minimap-toggle-display:hover {
+    background-color: #d8bd82 !important;
+}
+.leaflet-control-minimap-toggle-display:focus-visible {
+    outline: 3px solid #005fcc !important;
+    outline-offset: 2px !important;
+}
+.leaflet-control-minimap-toggle-display::after {
+    content: "−";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #3f4f3f;
+    font-size: 17px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* MiniMap closed: show plus */
+.leaflet-control-minimap-toggle-display.minimized-bottomright::after {
+    content: "+";
+}
+.labelFirst {
+    display: inline-block;
+    padding: 6px 9px;
+
+    background-color: rgba(255, 253, 247, 0.95);
+    color: #2f3b32;
+
+    border: 1px solid #d6c5aa;
+    border-radius: 6px;
+
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+.accessible-basemap-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.accessible-basemap-fieldset legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === Enlarged Leaflet controls: supervisor review === */
+/* Layers: radio/checkbox labels and group names */
+.leaflet-control-layers-expanded {
+  padding: 12px 14px;
+  max-width: min(340px, calc(100vw - 32px));
+  max-height: min(75vh, 560px);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.leaflet-control-layers-expanded label,
+.leaflet-control-layers-expanded .leaflet-control-layers-base,
+.leaflet-control-layers-expanded .leaflet-control-layers-overlays {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.leaflet-control-layers-expanded label {
+  display: block;
+  padding: 4px 0;
+}
+.leaflet-control-layers-expanded input[type="checkbox"],
+.leaflet-control-layers-expanded input[type="radio"] {
+  width: 17px;
+  height: 17px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+/* Attribution links under the minimap */
+.leaflet-control-attribution,
+.leaflet-control-attribution a {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 15px !important;
+  line-height: 1.5;
+}
+.leaflet-control-attribution {
+  padding: 3px 7px !important;
+}
+.leaflet-control-attribution a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+/* High contrast graphic scale */
+.leaflet-control-graphicscale {
+    background: #ffffff !important;
+    border: 2px solid #000000 !important;
+    border-radius: 5px !important;
+    padding: 8px 12px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+}
+
+.leaflet-control-graphicscale .subunits {
+    color: #000000 !important;
+}
+
+.leaflet-control-graphicscale .units {
+    color: #000000 !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+}
+
+.light-osm-tiles {
+  filter: grayscale(100%) brightness(1.12) contrast(0.82);
+}
+
+/* Keyboard focus inside accordion content */
+
+#accordion > div[tabindex="0"]:focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: -3px;
+}
+#read-map-description {
+  margin: 12px;
+  padding: 12px 16px;
+  background: #3f4f3f;
+  color: #ffffff;
+  border: 2px solid #263626;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#read-map-description:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 3px;
+}
+
+#read-map-description[hidden] {
+  display: none;
+}
+
+.leaflet-control-layers #read-map-description {
+  display: block;
+  margin: 8px 0 12px 24px;
+  max-width: calc(100% - 24px);
+  font-size: 14px;
+  white-space: normal;
+  text-align: left;
+}
+
+.leaflet-control-layers #read-map-description[hidden] {
+  display: none;
+}
+/* Lodestar review: keep skip links visible above map and loading overlay. */
+.skip-link:focus, .skip-link:focus-visible {
+  position: fixed;
+  top: 8px;
+  z-index: 2147483647;
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+/* Text spacing: avoid clipping labels when the user increases spacing. */
+.ui-accordion-header, .legend_title, .legend1_title, #read-map-description {
+  height: auto;
+  min-height: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+/* Improve legend text wrapping without changing scrolling */
+
+.legend td.legend_title,
+.legend1 td.legend1_title {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+}
+
+.legend,
+.legend1 {
+    table-layout: auto;
+}
+
+@media (max-width: 600px) {
+  #info_5000 table.legend {
+    display: block;
+    width: 100%;
+  }
+
+  #info_5000 table.legend tbody,
+  #info_5000 table.legend tr {
+    display: block;
+    width: 100%;
+  }
+
+  #info_5000 table.legend tr {
+    margin-bottom: 12px;
+  }
+
+  #info_5000 table.legend td {
+    box-sizing: border-box;
+    vertical-align: middle;
+  }
+
+  #info_5000 table.legend td.legend_img {
+    display: inline-block;
+    width: 45px;
+  }
+
+  #info_5000 table.legend td.legend_title {
+    display: inline-block;
+    width: calc(100% - 60px);
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 600px) {
+  .leaflet-control-coordinates {
+    box-sizing: border-box;
+    max-width: calc(100vw - 24px);
+    white-space: normal;
+  }
+
+  .leaflet-control-coordinates .uiElement.label,
+  .leaflet-control-coordinates .labelFirst {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* WCAG 1.4.10 - Responsive map attribution */
+@media (max-width: 600px) {
+  .leaflet-control-attribution {
+    box-sizing: border-box;
+    max-width: 100%;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+
+  .leaflet-bottom.leaflet-right {
+    max-width: 100%;
+  }
+}
+/* WCAG 1.4.10 - Narrow attribution */
+@media (max-width: 600px) {
+  .leaflet-control-attribution {
+    width: 140px;
+    max-width: calc(100% - 12px);
+    box-sizing: border-box;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+}
